@@ -26,7 +26,7 @@ type PurchaseReceiptEmailProps = {
 PurchaseReceiptEmail.PreviewProps = {
 	product: {
 		name: 'Product name',
-		description: 'somebody once told me',
+		description: 'Some description',
 		imagePath:
 			'/products/0f5a4884-fd0e-4972-8dda-5ed529b9ae33-Screenshot 2024-06-12 192155.png',
 	},
