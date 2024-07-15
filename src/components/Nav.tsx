@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 
 export function Nav({ children }: { children: ReactNode }) {
 	return (
-		<nav className="flex justify-center bg-primary px-4 text-primary-foreground">
+		<nav className="fixed z-10 flex h-16 w-full items-center justify-center border-b bg-white px-4 shadow-sm">
 			{children}
 		</nav>
 	)
@@ -19,8 +19,8 @@ export function NavLink(props: Omit<ComponentProps<typeof Link>, 'className'>) {
 		<Link
 			{...props}
 			className={cn(
-				'p-4 hover:bg-secondary hover:text-secondary-foreground focus-visible:bg-secondary focus-visible:text-secondary-foreground',
-				pathname === props.href && 'bg-background text-foreground'
+				'p-4 transition hover:text-primary focus-visible:text-primary',
+				pathname === props.href && 'text-primary'
 			)}
 		/>
 	)
