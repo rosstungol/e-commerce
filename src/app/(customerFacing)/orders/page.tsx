@@ -30,7 +30,13 @@ export default function MyOrdersPage() {
 				<CardContent>
 					<div className="space-y-2">
 						<Label htmlFor="email">Email</Label>
-						<Input type="email" name="email" id="email" required />
+						<Input
+							type="email"
+							name="email"
+							id="email"
+							required
+							className="transition"
+						/>
 						{data.error && <div className="text-destructive">{data.error}</div>}
 					</div>
 				</CardContent>
