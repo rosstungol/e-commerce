@@ -53,7 +53,7 @@ async function ProductsTable() {
 		orderBy: { name: 'asc' },
 	})
 
-	if (products.length === 0) return <p>No Products found</p>
+	if (products.length === 0) return <p>No products found</p>
 
 	return (
 		<Card>
