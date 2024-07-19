@@ -29,7 +29,8 @@ export async function addProduct(prevState: unknown, formData: FormData) {
 
 	const data = result.data
 
-	const baseDir = process.cwd()
+	const isServerless = !!process.env.LAMBDA_TASK_ROOT
+	const baseDir = isServerless ? '/tmp' : process.cwd()
 	const productsDir = path.join(baseDir, 'products')
 	const publicProductsDir = path.join(baseDir, 'public/products')
 
