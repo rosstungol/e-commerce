@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import db from '@/db/db'
 import fs from 'fs/promises'
+import path from 'path'
 
 const fileSchema = z.instanceof(File, { message: 'required' })
 const imageSchema = fileSchema.refine(
@@ -28,16 +29,43 @@ export async function addProduct(prevState: unknown, formData: FormData) {
 
 	const data = result.data
 
-	await fs.mkdir('products', { recursive: true })
-	const filePath = `products/${crypto.randomUUID()}-${data.file.name}`
-	await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()))
+	const baseDir = process.cwd()
+	const productsDir = path.join(baseDir, 'products')
+	const publicProductsDir = path.join(baseDir, 'public/products')
 
-	await fs.mkdir('public/products', { recursive: true })
-	const imagePath = `/products/${crypto.randomUUID()}-${data.image.name}`
-	await fs.writeFile(
-		`public${imagePath}`,
-		Buffer.from(await data.image.arrayBuffer())
+	console.log(`Creating directory: ${productsDir}`)
+	await fs.mkdir(productsDir, { recursive: true }).catch((err) => {
+		console.error(`Error creating directory ${productsDir}:`, err)
+		throw err
+	})
+
+	const filePath = path.join(
+		productsDir,
+		`${crypto.randomUUID()}-${data.file.name}`
 	)
+	console.log(`Writing file to: ${filePath}`)
+	await fs
+		.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()))
+		.catch((err) => {
+			console.error(`Error writing file to ${filePath}:`, err)
+			throw err
+		})
+
+	console.log(`Creating directory: ${publicProductsDir}`)
+	await fs.mkdir(publicProductsDir, { recursive: true }).catch((err) => {
+		console.error(`Error creating directory ${publicProductsDir}:`, err)
+		throw err
+	})
+
+	const imagePath = `/products/${crypto.randomUUID()}-${data.image.name}`
+	const publicImagePath = path.join(baseDir, `public${imagePath}`)
+	console.log(`Writing image to: ${publicImagePath}`)
+	await fs
+		.writeFile(publicImagePath, Buffer.from(await data.image.arrayBuffer()))
+		.catch((err) => {
+			console.error(`Error writing image to ${publicImagePath}:`, err)
+			throw err
+		})
 
 	await db.product.create({
 		data: {
