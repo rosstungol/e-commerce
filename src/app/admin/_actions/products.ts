@@ -29,44 +29,19 @@ export async function addProduct(prevState: unknown, formData: FormData) {
 
 	const data = result.data
 
-	const isServerless = !!process.env.LAMBDA_TASK_ROOT
-	const baseDir = isServerless ? '/tmp' : process.cwd()
-	const productsDir = path.join(baseDir, 'products')
-	const publicProductsDir = path.join(baseDir, 'public/products')
+	const fileName = `${crypto.randomUUID()}-${data.file.name}`
+	const filePath = `products/${fileName}`
+	const fileBuffer = Buffer.from(await data.file.arrayBuffer())
 
-	console.log(`Creating directory: ${productsDir}`)
-	await fs.mkdir(productsDir, { recursive: true }).catch((err) => {
-		console.error(`Error creating directory ${productsDir}:`, err)
-		throw err
-	})
+	await fs.mkdir('products', { recursive: true })
+	await fs.writeFile(filePath, fileBuffer)
 
-	const filePath = path.join(
-		productsDir,
-		`${crypto.randomUUID()}-${data.file.name}`
-	)
-	console.log(`Writing file to: ${filePath}`)
-	await fs
-		.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()))
-		.catch((err) => {
-			console.error(`Error writing file to ${filePath}:`, err)
-			throw err
-		})
+	const imageFileName = `${crypto.randomUUID()}-${data.image.name}`
+	const imagePath = `/products/${imageFileName}`
+	const imageFileBuffer = Buffer.from(await data.image.arrayBuffer())
 
-	console.log(`Creating directory: ${publicProductsDir}`)
-	await fs.mkdir(publicProductsDir, { recursive: true }).catch((err) => {
-		console.error(`Error creating directory ${publicProductsDir}:`, err)
-		throw err
-	})
-
-	const imagePath = `/products/${crypto.randomUUID()}-${data.image.name}`
-	const publicImagePath = path.join(baseDir, `public${imagePath}`)
-	console.log(`Writing image to: ${publicImagePath}`)
-	await fs
-		.writeFile(publicImagePath, Buffer.from(await data.image.arrayBuffer()))
-		.catch((err) => {
-			console.error(`Error writing image to ${publicImagePath}:`, err)
-			throw err
-		})
+	await fs.mkdir('public/products', { recursive: true })
+	await fs.writeFile(`public${imagePath}`, imageFileBuffer)
 
 	await db.product.create({
 		data: {
